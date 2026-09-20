@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartFix | Admin Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- ================= HEADER ================= -->
+
+    <div class="header">
+
+        <div>
+            <div class="logo">
+                🔧 SmartFix
+            </div>
+
+            <div class="subtitle">
+                Campus Maintenance Admin Dashboard
+            </div>
+        </div>
+
+        <a href="/">
+            ← Student Portal
+        </a>
+
+    </div>
+
+
+    <!-- ================= STATISTICS ================= -->
+
+    <div class="stats">
+
+        <!-- TOTAL -->
+
+        <div class="stat">
+
+            <h2>
+                {{ complaints|length }}
+            </h2>
+
+            <p>
+                Total Complaints
+            </p>
+
+        </div>
+
+
+        <!-- PENDING -->
+
+        <div class="stat">
+
+            <h2>
+                {{ complaints
+                   |selectattr("status", "equalto", "Pending")
+                   |list
+                   |length }}
+            </h2>
+
+            <p>
+                🟡 Pending
+            </p>
+
+        </div>
+
+
+        <!-- IN PROGRESS -->
+
+        <div class="stat">
+
+            <h2>
+                {{ complaints
+                   |selectattr("status", "equalto", "In Progress")
+                   |list
+                   |length }}
+            </h2>
+
+            <p>
+                🔵 In Progress
+            </p>
+
+        </div>
+
+
+        <!-- HIGH PRIORITY -->
+
+        <div class="stat">
+
+            <h2>
+                {{ complaints
+                   |selectattr("priority", "equalto", "High")
+                   |list
+                   |length }}
+            </h2>
+
+            <p>
+                🔴 High Priority
+            </p>
+
+        </div>
+
+
+        <!-- RESOLVED -->
+
+        <div class="stat">
+
+            <h2>
+                {{ complaints
+                   |selectattr("status", "equalto", "Resolved")
+                   |list
+                   |length }}
+            </h2>
+
+            <p>
+                🟢 Resolved
+            </p>
+
+        </div>
+
+    </div>
+    <!-- ================= ANALYTICS ================= -->
+
+<div class="card">
+
+    <h2>📊 Complaint Analytics</h2>
+
+    <p class="subtitle">
+        Category-wise campus maintenance complaints
+    </p>
+
+    {% set categories = ["Electrical", "Water Leakage", "Cleanliness", "Furniture", "Internet", "Other"] %}
+
+    {% for category in categories %}
+
+        {% set count = complaints
+            |selectattr("category", "equalto", category)
+            |list
+            |length %}
+
+        <div style="margin: 18px 0;">
+
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                margin-bottom:6px;
+                font-weight:bold;
+            ">
+                <span>{{ category }}</span>
+                <span>{{ count }}</span>
+            </div>
+
+            <div style="
+                width:100%;
+                height:10px;
+                background:#e5e7eb;
+                border-radius:10px;
+                overflow:hidden;
+            ">
+
+                <div style="
+                    width:{% if complaints|length > 0 %}
+                    {{ (count / complaints|length * 100)|round }}%
+                    {% else %}
+                    0%
+                    {% endif %};
+                    height:100%;
+                    background:#2563eb;
+                    border-radius:10px;
+                "></div>
+
+            </div>
+
+        </div>
+
+    {% endfor %}
+
+</div>
+
+
+    <!-- ================= COMPLAINT MANAGEMENT ================= -->
+
+    <div class="card">
+
+        <h2>
+            Complaint Management
+        </h2>
+
+        <p class="subtitle">
+            Review, prioritize and manage campus maintenance requests.
+        </p>
+
+
+        <!-- ================= FILTERS ================= -->
+
+        <div class="filters">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="🔍 Search complaint..."
+                onkeyup="filterComplaints()"
+            >
+
+
+            <select
+                id="categoryFilter"
+                onchange="filterComplaints()">
+
+                <option value="All">
+                    All Categories
+                </option>
+
+                <option value="Electrical">
+                    Electrical
+                </option>
+
+                <option value="Water Leakage">
+                    Water Leakage
+                </option>
+
+                <option value="Cleanliness">
+                    Cleanliness
+                </option>
+
+                <option value="Furniture">
+                    Furniture
+                </option>
+
+                <option value="Internet">
+                    Internet
+                </option>
+
+                <option value="Other">
+                    Other
+                </option>
+
+            </select>
+
+
+            <select
+                id="statusFilter"
+                onchange="filterComplaints()">
+
+                <option value="All">
+                    All Status
+                </option>
+
+                <option value="Pending">
+                    Pending
+                </option>
+
+                <option value="In Progress">
+                    In Progress
+                </option>
+
+                <option value="Resolved">
+                    Resolved
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- ================= COMPLAINT LIST ================= -->
+
+        {% if complaints %}
+
+            {% for complaint in complaints %}
+
+            <div
+                class="complaint"
+                data-category="{{ complaint.category }}"
+                data-status="{{ complaint.status }}"
+            >
+
+                <!-- COMPLAINT HEADER -->
+
+                <div class="complaint-header">
+
+                    <h3>
+                        #{{ complaint.id }}
+                        — {{ complaint.category }}
+                    </h3>
+
+
+                    <!-- PRIORITY -->
+
+                    {% if complaint.priority == "High" %}
+
+                        <span class="priority high">
+                            🔴 High Priority
+                        </span>
+
+                    {% elif complaint.priority == "Medium" %}
+
+                        <span class="priority medium">
+                            🟡 Medium Priority
+                        </span>
+
+                    {% else %}
+
+                        <span class="priority low">
+                            🟢 Low Priority
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- LOCATION -->
+
+                <p>
+                    📍
+                    <strong>Location:</strong>
+                    {{ complaint.location }}
+                </p>
+
+
+                <!-- DESCRIPTION -->
+
+                <p>
+                    📝
+                    <strong>Problem:</strong>
+                    {{ complaint.description }}
+                </p>
+
+
+                <!-- ================= STATUS ================= -->
+
+                <div class="status-section">
+
+                    {% if complaint.status == "Pending" %}
+
+                        <span class="status">
+                            🟡 Pending
+                        </span>
+
+
+                        <div class="action-buttons">
+
+                            <form
+                                action="/status/{{ complaint.id }}/In%20Progress"
+                                method="POST"
+                            >
+
+                                <button type="submit">
+                                    ⚙ Start Work
+                                </button>
+
+                            </form>
+
+                        </div>
+
+
+                    {% elif complaint.status == "In Progress" %}
+
+                        <span class="status progress">
+                            🔵 In Progress
+                        </span>
+
+
+                        <div class="action-buttons">
+
+                            <form
+                                action="/status/{{ complaint.id }}/Resolved"
+                                method="POST"
+                            >
+
+                                <button type="submit">
+                                    ✓ Mark as Resolved
+                                </button>
+
+                            </form>
+
+                        </div>
+
+
+                    {% else %}
+
+                        <span class="status resolved">
+                            🟢 Resolved
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+
+        {% else %}
+
+            <!-- NO COMPLAINTS -->
+
+            <div class="empty-state">
+
+                <h3>
+                    📭 No Complaints Yet
+                </h3>
+
+                <p class="subtitle">
+                    New campus maintenance complaints will appear here.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ================= WORKFLOW ================= -->
+
+    <div class="card">
+
+        <h3>
+            💡 SmartFix Workflow
+        </h3>
+
+        <p class="subtitle">
+
+            Student Reports
+            →
+            Category
+            →
+            Priority
+            →
+            Admin Action
+            →
+            Resolution
+
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script>
+
+function filterComplaints() {
+
+    const search =
+        document.getElementById("searchInput")
+        .value
+        .toLowerCase();
+
+
+    const category =
+        document.getElementById("categoryFilter")
+        .value;
+
+
+    const status =
+        document.getElementById("statusFilter")
+        .value;
+
+
+    const complaints =
+        document.querySelectorAll(".complaint");
+
+
+    complaints.forEach(function(card) {
+
+        const text =
+            card.innerText
+            .toLowerCase();
+
+
+        const cardCategory =
+            card.dataset.category;
+
+
+        const cardStatus =
+            card.dataset.status;
+
+
+        const matchesSearch =
+            text.includes(search);
+
+
+        const matchesCategory =
+            category === "All" ||
+            cardCategory === category;
+
+
+        const matchesStatus =
+            status === "All" ||
+            cardStatus === status;
+
+
+        if (
+            matchesSearch &&
+            matchesCategory &&
+            matchesStatus
+        ) {
+
+            card.style.display = "block";
+
+        } else {
+
+            card.style.display = "none";
+
+        }
+
+    });
+
+}
+
+</script>
+
+
+</body>
+
+</html>

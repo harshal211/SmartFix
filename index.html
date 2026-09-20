@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartFix</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+
+
+
+    <div class="card">
+
+        <h2>Report a Campus Problem</h2>
+
+        <p class="subtitle">
+            Report any maintenance issue in your campus.
+        </p>
+
+
+        <form action="/submit" method="POST">
+
+            <!-- CATEGORY -->
+
+            <label for="category">
+                Problem Category
+            </label>
+
+            <select id="category"
+                    name="category"
+                    required>
+
+                <option value="">
+                    Select Problem Category
+                </option>
+
+                <option value="Electrical">
+                    ⚡ Electrical
+                </option>
+
+                <option value="Water Leakage">
+                    💧 Water Leakage
+                </option>
+
+                <option value="Cleanliness">
+                    🧹 Cleanliness
+                </option>
+
+                <option value="Furniture">
+                    🪑 Furniture
+                </option>
+
+                <option value="Internet">
+                    🌐 Internet
+                </option>
+
+                <option value="Other">
+                    🔧 Other
+                </option>
+
+            </select>
+
+
+            <!-- LOCATION -->
+
+            <label for="location">
+                Location
+            </label>
+
+            <input
+                type="text"
+                id="location"
+                name="location"
+                placeholder="Example: Block A - Room 204"
+                required
+            >
+
+
+            <!-- DESCRIPTION -->
+
+            <label for="description">
+                Problem Description
+            </label>
+
+            <textarea
+                id="description"
+                name="description"
+                placeholder="Describe the problem clearly..."
+                required></textarea>
+
+
+            <button type="submit">
+                Submit Complaint
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>💡 How SmartFix Works</h3>
+
+        <p>
+            <strong>
+                Report → Categorize → Prioritize → Resolve
+            </strong>
+        </p>
+
+    </div>
+
+</div>
+
+</body>
+</html>
