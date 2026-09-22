@@ -1,18 +1,59 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>SmartFix - Submitted</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
 
-    <h1>✅ Complaint Submitted!</h1>
+<div class="container">
 
-    <p>Your complaint has been successfully recorded.</p>
+    <div class="card success">
 
-    <br>
+        <h1>✅ Complaint Submitted!</h1>
 
-    <a href="/">← Report Another Problem</a>
+        <p>Your complaint has been successfully recorded.</p>
+
+        <div style="
+            margin: 25px 0;
+            padding: 20px;
+            background: #f1f5f9;
+            border-radius: 12px;
+        ">
+
+            <p style="margin: 0; color: #64748b;">
+                Your Complaint ID
+            </p>
+
+            <h2 style="
+                font-size: 32px;
+                margin: 8px 0 0;
+                color: #2563eb;
+            ">
+                #{{ complaint_id }}
+            </h2>
+
+        </div>
+
+        <p>
+            Please save this Complaint ID to track your complaint status.
+        </p>
+
+        <br>
+
+        <a href="/">← Report Another Problem</a>
+
+    </div>
+
+</div>
 
 </body>
+
 </html>
