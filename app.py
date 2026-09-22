@@ -56,7 +56,7 @@ def submit():
 
     conn = get_db()
 
-    conn.execute("""
+    cursor = conn.execute("""
         INSERT INTO complaints
         (category, location, description, priority, status)
         VALUES (?, ?, ?, ?, ?)
@@ -68,15 +68,55 @@ def submit():
         "Pending"
     ))
 
+    complaint_id = cursor.lastrowid
+
     conn.commit()
     conn.close()
 
-    return redirect(url_for("success"))
+    return render_template(
+        "success.html",
+        complaint_id=complaint_id
+    )
 
 
 @app.route("/success")
 def success():
     return render_template("success.html")
+
+
+
+@app.route("/track", methods=["GET", "POST"])
+def track():
+
+    complaint = None
+    error = None
+
+    if request.method == "POST":
+
+        complaint_id = request.form.get("complaint_id")
+
+        if complaint_id and complaint_id.isdigit():
+
+            conn = get_db()
+
+            complaint = conn.execute("""
+                SELECT * FROM complaints
+                WHERE id = ?
+            """, (complaint_id,)).fetchone()
+
+            conn.close()
+
+            if complaint is None:
+                error = "Complaint not found. Please check your Complaint ID."
+
+        else:
+            error = "Please enter a valid Complaint ID."
+
+    return render_template(
+        "track.html",
+        complaint=complaint,
+        error=error
+    )
 
 
 # =========================
