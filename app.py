@@ -1,9 +1,13 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
+import os
 
 app = Flask(__name__)
 
 DATABASE = "smartfix.db"
+
+# Secret key for login session
+app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key")
 
 
 def get_db():
@@ -75,8 +79,59 @@ def success():
     return render_template("success.html")
 
 
+# =========================
+# ADMIN LOGIN
+# =========================
+
+@app.route("/admin/login", methods=["GET", "POST"])
+def admin_login():
+
+    if request.method == "POST":
+
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        admin_username = os.environ.get(
+            "ADMIN_USERNAME",
+            "admin"
+        )
+
+        admin_password = os.environ.get(
+            "ADMIN_PASSWORD",
+            "admin123"
+        )
+
+        if username == admin_username and password == admin_password:
+
+            session["admin_logged_in"] = True
+
+            return redirect(url_for("admin"))
+
+        return render_template(
+            "admin_login.html",
+            error="Invalid username or password"
+        )
+
+    return render_template("admin_login.html")
+
+
+@app.route("/admin/logout")
+def admin_logout():
+
+    session.pop("admin_logged_in", None)
+
+    return redirect(url_for("admin_login"))
+
+
+# =========================
+# ADMIN DASHBOARD
+# =========================
+
 @app.route("/admin")
 def admin():
+
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin_login"))
 
     conn = get_db()
 
@@ -93,10 +148,24 @@ def admin():
     )
 
 
-@app.route("/status/<int:complaint_id>/<new_status>", methods=["POST"])
+# =========================
+# UPDATE STATUS
+# =========================
+
+@app.route(
+    "/status/<int:complaint_id>/<new_status>",
+    methods=["POST"]
+)
 def update_status(complaint_id, new_status):
 
-    allowed_statuses = ["Pending", "In Progress", "Resolved"]
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin_login"))
+
+    allowed_statuses = [
+        "Pending",
+        "In Progress",
+        "Resolved"
+    ]
 
     if new_status not in allowed_statuses:
         return redirect(url_for("admin"))
@@ -113,22 +182,10 @@ def update_status(complaint_id, new_status):
     conn.close()
 
     return redirect(url_for("admin"))
-def resolve(complaint_id):
 
-    conn = get_db()
-
-    conn.execute("""
-        UPDATE complaints
-        SET status = 'Resolved'
-        WHERE id = ?
-    """, (complaint_id,))
-
-    conn.commit()
-    conn.close()
-
-    return redirect(url_for("admin"))
 
 init_db()
+
 
 if __name__ == "__main__":
     app.run(debug=True)
