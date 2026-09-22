@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartFix - Track Complaint</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <h2>🔍 Track Your Complaint</h2>
+
+        <p class="subtitle">
+            Enter your Complaint ID to check the current status.
+        </p>
+
+        <form action="/track" method="POST">
+
+            <label for="complaint_id">
+                Complaint ID
+            </label>
+
+            <input
+                type="number"
+                id="complaint_id"
+                name="complaint_id"
+                placeholder="Enter Complaint ID"
+                required
+            >
+
+            <button type="submit">
+                🔍 Track Complaint
+            </button>
+
+        </form>
+
+        {% if error %}
+
+        <div style="
+            margin-top: 20px;
+            padding: 15px;
+            background: #fee2e2;
+            color: #b91c1c;
+            border-radius: 10px;
+        ">
+            ❌ {{ error }}
+        </div>
+
+        {% endif %}
+
+    </div>
+
+
+    {% if complaint %}
+
+    <div class="card">
+
+        <h2>
+            Complaint #{{ complaint["id"] }}
+        </h2>
+
+        <p>
+            <strong>Category:</strong>
+            {{ complaint["category"] }}
+        </p>
+
+        <p>
+            <strong>Location:</strong>
+            {{ complaint["location"] }}
+        </p>
+
+        <p>
+            <strong>Description:</strong>
+            {{ complaint["description"] }}
+        </p>
+
+        <p>
+            <strong>Priority:</strong>
+
+            <span class="priority {{ complaint['priority'].lower() }}">
+                {{ complaint["priority"] }}
+            </span>
+        </p>
+
+        <p>
+            <strong>Status:</strong>
+
+            {% if complaint["status"] == "Pending" %}
+
+                <span class="status">
+                    🟡 Pending
+                </span>
+
+            {% elif complaint["status"] == "In Progress" %}
+
+                <span class="status progress">
+                    🔵 In Progress
+                </span>
+
+            {% elif complaint["status"] == "Resolved" %}
+
+                <span class="status resolved">
+                    🟢 Resolved
+                </span>
+
+            {% endif %}
+
+        </p>
+
+    </div>
+
+    {% endif %}
+
+
+    <div class="card" style="text-align:center;">
+
+        <a href="/">
+            ← Back to Student Portal
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
