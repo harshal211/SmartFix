@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartFix | Admin Login</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card login-card">
+
+        <div class="login-logo">
+            🔧 SmartFix
+        </div>
+
+        <h2>Admin Login</h2>
+
+        <p class="subtitle">
+            Login to access the campus maintenance dashboard.
+        </p>
+
+
+        {% if error %}
+
+        <div class="login-error">
+            ❌ {{ error }}
+        </div>
+
+        {% endif %}
+
+
+        <form action="/admin/login" method="POST">
+
+            <label for="username">
+                Username
+            </label>
+
+            <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Enter admin username"
+                required
+            >
+
+
+            <label for="password">
+                Password
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter admin password"
+                required
+            >
+
+
+            <button type="submit">
+                🔐 Login
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>
